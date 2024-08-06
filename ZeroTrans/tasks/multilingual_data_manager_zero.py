@@ -1,9 +1,10 @@
 import logging
+
 import torch
 from fairseq.data import RawLabelDataset
 from fairseq.data.multilingual.multilingual_data_manager import MultilingualDatasetManager
-from ZeroTrans.data import LanguagePairDatasetZero
 
+from ZeroTrans.data import LanguagePairDatasetZero
 
 logger = logging.getLogger(__name__)
 
@@ -20,28 +21,28 @@ class MultilingualDatasetManagerZero(MultilingualDatasetManager):
         )
 
     def load_langpair_dataset(
-        self,
-        data_path,
-        split,
-        src,
-        src_dict,
-        tgt,
-        tgt_dict,
-        combine,
-        dataset_impl,
-        upsample_primary,
-        left_pad_source,
-        left_pad_target,
-        max_source_positions,
-        max_target_positions,
-        prepend_bos=False,
-        load_alignments=False,
-        truncate_source=False,
-        src_dataset_transform_func=lambda dataset: dataset,
-        tgt_dataset_transform_func=lambda dataset: dataset,
-        src_lang_id=None,
-        tgt_lang_id=None,
-        langpairs_sharing_datasets=None,
+            self,
+            data_path,
+            split,
+            src,
+            src_dict,
+            tgt,
+            tgt_dict,
+            combine,
+            dataset_impl,
+            upsample_primary,
+            left_pad_source,
+            left_pad_target,
+            max_source_positions,
+            max_target_positions,
+            prepend_bos=False,
+            load_alignments=False,
+            truncate_source=False,
+            src_dataset_transform_func=lambda dataset: dataset,
+            tgt_dataset_transform_func=lambda dataset: dataset,
+            src_lang_id=None,
+            tgt_lang_id=None,
+            langpairs_sharing_datasets=None,
     ):
         norm_direction = "-".join(sorted([src, tgt]))
         if langpairs_sharing_datasets is not None:
@@ -57,11 +58,11 @@ class MultilingualDatasetManagerZero(MultilingualDatasetManager):
 
         # a hack: any one is not in cache, we need to reload them
         if (
-            langpairs_sharing_datasets is None
-            or src_dataset == "NotInCache"
-            or tgt_dataset == "NotInCache"
-            or align_dataset == "NotInCache"
-            or split != getattr(self.args, "train_subset", None)
+                langpairs_sharing_datasets is None
+                or src_dataset == "NotInCache"
+                or tgt_dataset == "NotInCache"
+                or align_dataset == "NotInCache"
+                or split != getattr(self.args, "train_subset", None)
         ):
             # source and target datasets can be reused in reversed directions to save memory
             # reversed directions of valid and test data will not share source and target datasets

@@ -23,7 +23,7 @@ mkdir $TOKENIZED_PATH
 for lang in en de fi pt bg sl it pl hu ro es da nl et cs; do
   for split in train valid test; do
     file_name=${MONO_PATH}/${split}"."${lang}
-    cat $file_name | perl $TOKENIZER -threads 64 -l $lang >> ${TOKENIZED_PATH}"/"${split}"."$lang
+    cat $file_name | perl $TOKENIZER -threads 64 -l $lang >>${TOKENIZED_PATH}"/"${split}"."$lang
   done
 done
 
@@ -40,17 +40,17 @@ TRAIN_FILES=${ROOT_PATH}/europarl_scripts/build_data/bpe.input-output
 for lang in en de fi pt bg sl it pl hu ro es da nl et cs; do
   filename=${TOKENIZED_PATH}"/train."$lang
   echo $filename
-  cat $filename >> $TRAIN_FILES
+  cat $filename >>$TRAIN_FILES
 done
 
 # get bpe model
 echo "learning joint BPE over ${TRAIN_FILES}..."
 python $SPM_TRAIN \
-    --input=$TRAIN_FILES \
-    --model_prefix=${ROOT_PATH}/europarl_scripts/build_data/europarl.bpe \
-    --vocab_size=$BPESIZE \
-    --character_coverage=1.0 \
-    --model_type=bpe
+  --input=$TRAIN_FILES \
+  --model_prefix=${ROOT_PATH}/europarl_scripts/build_data/europarl.bpe \
+  --vocab_size=$BPESIZE \
+  --character_coverage=1.0 \
+  --model_type=bpe
 
 # encode row data via bpe
 BPE_MONO_PATH=${ROOT_PATH}/europarl_scripts/build_data/bpe_mono
@@ -58,10 +58,10 @@ mkdir $BPE_MONO_PATH
 for lang in en de fi pt bg sl it pl hu ro es da nl et cs; do
   for split in train valid test; do
     python "$SPM_ENCODE" \
-          --model ${ROOT_PATH}/europarl_scripts/build_data/europarl.bpe.model \
-          --output_format=piece \
-          --inputs ${TOKENIZED_PATH}"/"$split"."$lang \
-          --outputs ${BPE_MONO_PATH}"/"$split"."$lang
+      --model ${ROOT_PATH}/europarl_scripts/build_data/europarl.bpe.model \
+      --output_format=piece \
+      --inputs ${TOKENIZED_PATH}"/"$split"."$lang \
+      --outputs ${BPE_MONO_PATH}"/"$split"."$lang
   done
 done
 BPE_PATH=${ROOT_PATH}/europarl_scripts/build_data/bpe
@@ -72,7 +72,7 @@ python ${ROOT_PATH}/europarl_scripts/build_data/pairing.py $BPE_MONO_PATH $BPE_P
 # get dict
 BINARY_PATH=${ROOT_PATH}/europarl_15-bin
 mkdir $BINARY_PATH
-cut -f 1 ${ROOT_PATH}/europarl_scripts/build_data/europarl.bpe.vocab | tail -n +4 | sed "s/$/ 1/g" > ${BINARY_PATH}/dict.txt
+cut -f 1 ${ROOT_PATH}/europarl_scripts/build_data/europarl.bpe.vocab | tail -n +4 | sed "s/$/ 1/g" >${BINARY_PATH}/dict.txt
 
 # binary by fairseq
 for src in en de fi pt bg sl it pl hu ro es da nl et cs; do
@@ -81,7 +81,7 @@ for src in en de fi pt bg sl it pl hu ro es da nl et cs; do
       continue
     fi
     if [ $src == 'en' ] || [ $tgt == 'en' ]; then
-        fairseq-preprocess --task "translation" --source-lang $src --target-lang $tgt \
+      fairseq-preprocess --task "translation" --source-lang $src --target-lang $tgt \
         --trainpref ${BPE_PATH}/train.${src}"_"${tgt} \
         --validpref ${BPE_PATH}/valid.${src}"_"${tgt} \
         --testpref ${BPE_PATH}/test.${src}"_"${tgt} \
@@ -89,7 +89,7 @@ for src in en de fi pt bg sl it pl hu ro es da nl et cs; do
         --srcdict ${BINARY_PATH}/dict.txt --tgtdict ${BINARY_PATH}/dict.txt
     fi
     if [ $src != 'en' ] && [ $tgt != 'en' ]; then
-        fairseq-preprocess --task "translation" --source-lang $src --target-lang $tgt \
+      fairseq-preprocess --task "translation" --source-lang $src --target-lang $tgt \
         --testpref ${BPE_PATH}/test.${src}"_"${tgt} \
         --destdir ${BINARY_PATH} --padding-factor 1 --workers 128 \
         --srcdict ${BINARY_PATH}/dict.txt --tgtdict ${BINARY_PATH}/dict.txt

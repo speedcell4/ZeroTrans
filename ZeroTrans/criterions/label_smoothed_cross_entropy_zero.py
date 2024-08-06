@@ -1,19 +1,22 @@
+import copy
+import math
+import random
+from typing import List, Optional
+
+import torch
+import torch.nn as nn
+from fairseq import metrics, utils
 from fairseq.criterions import register_criterion
 from fairseq.criterions.label_smoothed_cross_entropy import LabelSmoothedCrossEntropyCriterion
-from fairseq import metrics, utils
-import math
-import torch.nn as nn
-from typing import List, Optional
-import torch
-import copy
-import random
 
 random.seed(0)
+
 
 @register_criterion("label_smoothed_cross_entropy_zero")
 class LabelSmoothedCrossEntropyCriterionZero(LabelSmoothedCrossEntropyCriterion):
     def __init__(self, task, sentence_avg, label_smoothing, ignore_prefix_size=0, report_accuracy=False,
-                 contrastive_lambda=1.0, temperature=1.0, dec_dim=0, negative_sampling_number=5, contrastive_learning=False, contrastive_position=6):
+                 contrastive_lambda=1.0, temperature=1.0, dec_dim=0, negative_sampling_number=5,
+                 contrastive_learning=False, contrastive_position=6):
         super().__init__(task, sentence_avg, label_smoothing, ignore_prefix_size, report_accuracy)
         self.negative_samples_number = negative_sampling_number
         self.contrastive_lambda = contrastive_lambda
@@ -44,13 +47,17 @@ class LabelSmoothedCrossEntropyCriterionZero(LabelSmoothedCrossEntropyCriterion)
         language_num = net_output[1]["language_num"]
         tgt_direction = net_output[1]["tgt_direction"]
         if self.contrastive_learning:
-            positive_indices, negative_indices, k_to_language = optimal_sampling(language_num, self.negative_samples_number, tgt_direction)
+            positive_indices, negative_indices, k_to_language = optimal_sampling(language_num,
+                                                                                 self.negative_samples_number,
+                                                                                 tgt_direction)
             mask = (prev_output_tokens != self.padding_idx)
             # times mask, then divide by token_num for each sentence
-            anchors = (output_decoder_per_layer[self.contrastive_position].transpose(0, 1) * mask.unsqueeze(-1)).sum(dim=1) / mask.float().sum(dim=1).unsqueeze(-1)
+            anchors = (output_decoder_per_layer[self.contrastive_position].transpose(0, 1) * mask.unsqueeze(-1)).sum(
+                dim=1) / mask.float().sum(dim=1).unsqueeze(-1)
             # if decoder_normalize_before = True
             # anchors = torch.nn.functional.normalize(anchors, p=2, dim=-1)
-            contrastive_loss = self.compute_contrastive_loss(anchors, positive_indices, negative_indices, k_to_language, tgt_direction, self.negative_samples_number, self.dec_dim)
+            contrastive_loss = self.compute_contrastive_loss(anchors, positive_indices, negative_indices, k_to_language,
+                                                             tgt_direction, self.negative_samples_number, self.dec_dim)
         else:
             contrastive_loss = torch.Tensor([0]).cuda()
 

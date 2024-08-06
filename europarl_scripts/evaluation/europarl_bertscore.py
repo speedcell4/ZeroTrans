@@ -1,8 +1,9 @@
-from bert_score import BERTScorer
-import sys
 import os
+import sys
 
-root_path="../europarl_scripts"
+from bert_score import BERTScorer
+
+root_path = "../europarl_scripts"
 method = sys.argv[1]
 model_id = sys.argv[2]
 cuda_id = sys.argv[3]
@@ -18,23 +19,19 @@ def _read_txt_strip_(url):
 
 writing_list = []
 for i, tgt in enumerate(language_sequence):
-    tmp_score = BERTScorer(lang=tgt, device="cuda:{}".format(cuda_id))
+    tmp_score = BERTScorer(lang=tgt, device=f"cuda:{cuda_id}")
     for j, src in enumerate(language_sequence):
         if i == j: continue
         ref = _read_txt_strip_(os.path.join(root_path, "results", method, str(model_id), f"{src}-{tgt}.detok.r"))
         hypo = _read_txt_strip_(os.path.join(root_path, "results", method, str(model_id), f"{src}-{tgt}.detok.h"))
         P, R, F = tmp_score.score(hypo, ref, batch_size=100)
         P, R, F = round(P.mean().item() * 100, 2), round(R.mean().item() * 100, 2), round(F.mean().item() * 100, 2)
-        print("{}-{}".format(src, tgt))
-        print("P: {} R: {} F: {}".format(P, R, F))
-        writing_list.append("{}-{}\n".format(src, tgt))
-        writing_list.append("P: {} R: {} F: {} \n".format(P, R, F))
+        print(f"{src}-{tgt}")
+        print(f"P: {P} R: {R} F: {F}")
+        writing_list.append(f"{src}-{tgt}\n")
+        writing_list.append(f"P: {P} R: {R} F: {F} \n")
 
-
-file = open(os.path.join(root_path, "results", method, str(model_id), f"{str(model_id)}.bertscore"), 'w', encoding='utf-8')
+file = open(os.path.join(root_path, "results", method, str(model_id), f"{str(model_id)}.bertscore"), 'w',
+            encoding='utf-8')
 file.writelines(writing_list)
 file.close()
-
-
-
-

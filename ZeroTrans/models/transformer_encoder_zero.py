@@ -2,9 +2,10 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
+from fairseq.distributed import fsdp_wrap
 from fairseq.models.transformer import TransformerEncoderBase
 from fairseq.modules.checkpoint_activations import checkpoint_wrapper
-from fairseq.distributed import fsdp_wrap
+
 from ZeroTrans.modules import TransformerEncoderLayerZero
 
 

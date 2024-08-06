@@ -1,7 +1,6 @@
-import sys
 import os
 import random
-
+import sys
 
 if __name__ == "__main__":
     random.seed(0)
@@ -21,22 +20,22 @@ if __name__ == "__main__":
         if os.path.exists(os.path.join(lpair_dir, f"opus.{lpair}-train-rebuilt.{tgt}")):
             continue
 
-        test_src =  os.path.join(lpair_dir, f"opus.{lpair}-test.{src}")
-        test_tgt =  os.path.join(lpair_dir, f"opus.{lpair}-test.{tgt}")
+        test_src = os.path.join(lpair_dir, f"opus.{lpair}-test.{src}")
+        test_tgt = os.path.join(lpair_dir, f"opus.{lpair}-test.{tgt}")
         with open(test_src) as src_file, open(test_tgt) as tgt_file:
             test_data = list(zip(src_file, tgt_file))
             test_length = len(test_data)
             test_data = set(test_data)
 
-        valid_src =  os.path.join(lpair_dir, f"opus.{lpair}-dev.{src}")
-        valid_tgt =  os.path.join(lpair_dir, f"opus.{lpair}-dev.{tgt}")
+        valid_src = os.path.join(lpair_dir, f"opus.{lpair}-dev.{src}")
+        valid_tgt = os.path.join(lpair_dir, f"opus.{lpair}-dev.{tgt}")
         with open(valid_src) as src_file, open(valid_tgt) as tgt_file:
             valid_data = list(zip(src_file, tgt_file))
             valid_length = len(valid_data)
             valid_data = list(set(valid_data) - test_data)
 
-        train_src =  os.path.join(lpair_dir, f"opus.{lpair}-train.{src}")
-        train_tgt =  os.path.join(lpair_dir, f"opus.{lpair}-train.{tgt}")
+        train_src = os.path.join(lpair_dir, f"opus.{lpair}-train.{src}")
+        train_tgt = os.path.join(lpair_dir, f"opus.{lpair}-train.{tgt}")
         with open(train_src) as src_file, open(train_tgt) as tgt_file:
             tmp_data = set(zip(src_file, tgt_file))
             train_data = list(tmp_data - test_data)
@@ -48,15 +47,15 @@ if __name__ == "__main__":
             valid_data += train_data[-supply_size:]
             train_data = train_data[:-supply_size]
 
-        valid_src =  os.path.join(lpair_dir, f"opus.{lpair}-dev-rebuilt.{src}")
-        valid_tgt =  os.path.join(lpair_dir, f"opus.{lpair}-dev-rebuilt.{tgt}")
+        valid_src = os.path.join(lpair_dir, f"opus.{lpair}-dev-rebuilt.{src}")
+        valid_tgt = os.path.join(lpair_dir, f"opus.{lpair}-dev-rebuilt.{tgt}")
         with open(valid_src, 'w') as src_file, open(valid_tgt, 'w') as tgt_file:
             src_data, tgt_data = list(zip(*valid_data))
             src_file.writelines(src_data)
             tgt_file.writelines(tgt_data)
 
-        train_src =  os.path.join(lpair_dir, f"opus.{lpair}-train-rebuilt.{src}")
-        train_tgt =  os.path.join(lpair_dir, f"opus.{lpair}-train-rebuilt.{tgt}")
+        train_src = os.path.join(lpair_dir, f"opus.{lpair}-train-rebuilt.{src}")
+        train_tgt = os.path.join(lpair_dir, f"opus.{lpair}-train-rebuilt.{tgt}")
         with open(train_src, 'w') as src_file, open(train_tgt, 'w') as tgt_file:
             src_data, tgt_data = list(zip(*train_data))
             src_file.writelines(src_data)

@@ -1,11 +1,11 @@
-import openpyxl
 import os
 
-root_path="../europarl_scripts"
-language_sequence = ["en", "de", "fi", "pt", "bg", 'sl', "it",  "pl", "hu", "ro", "es", "da", "nl", "et", "cs"]
+import openpyxl
+
+root_path = "../europarl_scripts"
+language_sequence = ["en", "de", "fi", "pt", "bg", 'sl', "it", "pl", "hu", "ro", "es", "da", "nl", "et", "cs"]
 language_dict = {'en': 1, 'de': 2, 'nl': 3, 'da': 4, 'es': 5, 'pt': 6, 'ro': 7,
                  'it': 8, 'sl': 9, 'pl': 10, 'cs': 11, 'bg': 12, "fi": 13, "hu": 14, "et": 15}
-
 
 
 def _read_txt_strip_(url):
@@ -54,8 +54,8 @@ def make_bar(sheet, final_data):
 
 def extract_results_from_file(model_id, dir_name):
     dir_path = os.path.join(root_path, "results", dir_name)
-    final_results_list =[0, 0, 0, 0]
-    data = _read_txt_strip_(os.path.join(root_path, dir_path, str(model_id), "{}.sacrebleu".format(model_id)))
+    final_results_list = [0, 0, 0, 0]
+    data = _read_txt_strip_(os.path.join(root_path, dir_path, str(model_id), f"{model_id}.sacrebleu"))
 
     bleu_list = [[0 for _ in range(len(language_sequence) - 1)] for _ in range(len(language_sequence))]
     # en2m, m2en, supervised, zero
@@ -79,12 +79,13 @@ def extract_results_from_file(model_id, dir_name):
                 final_results_list[1] += score
             else:
                 final_results_list[3] += score
-    final_results_list[0] = round(final_results_list[0]/(len(language_sequence) - 1), 2)
+    final_results_list[0] = round(final_results_list[0] / (len(language_sequence) - 1), 2)
     final_results_list[1] = round(final_results_list[1] / (len(language_sequence) - 1), 2)
     final_results_list[2] = round(((final_results_list[0] + final_results_list[1]) / 2), 2)
-    final_results_list[3] = round(final_results_list[3] / ((len(language_sequence) - 1) * (len(language_sequence) - 2)), 2)
+    final_results_list[3] = round(final_results_list[3] / ((len(language_sequence) - 1) * (len(language_sequence) - 2)),
+                                  2)
 
-    data = _read_txt_strip_(os.path.join(root_path, dir_path, str(model_id), "{}.bertscore".format(model_id)))
+    data = _read_txt_strip_(os.path.join(root_path, dir_path, str(model_id), f"{model_id}.bertscore"))
     p_list = [[0 for _ in range(len(language_sequence) - 1)] for _ in range(len(language_sequence))]
     r_list = [[0 for _ in range(len(language_sequence) - 1)] for _ in range(len(language_sequence))]
     f_list = [[0 for _ in range(len(language_sequence) - 1)] for _ in range(len(language_sequence))]
@@ -100,7 +101,7 @@ def extract_results_from_file(model_id, dir_name):
             if idx_i > idx_j:
                 p_list[idx_i][idx_j], r_list[idx_i][idx_j], f_list[idx_i][idx_j] = p, r, f
             else:
-                p_list[idx_i][idx_j-1], r_list[idx_i][idx_j-1], f_list[idx_i][idx_j-1] = p, r, f
+                p_list[idx_i][idx_j - 1], r_list[idx_i][idx_j - 1], f_list[idx_i][idx_j - 1] = p, r, f
             if idx_i == 0:
                 final_results_list[1][0] += p
                 final_results_list[2][0] += r
@@ -116,17 +117,20 @@ def extract_results_from_file(model_id, dir_name):
     final_results_list[1][0] = round(final_results_list[1][0] / (len(language_sequence) - 1), 2)
     final_results_list[1][1] = round(final_results_list[1][1] / (len(language_sequence) - 1), 2)
     final_results_list[1][2] = round(((final_results_list[1][0] + final_results_list[1][1]) / 2), 2)
-    final_results_list[1][3] = round(final_results_list[1][3] / ((len(language_sequence) - 1) * (len(language_sequence) - 2)), 2)
+    final_results_list[1][3] = round(
+        final_results_list[1][3] / ((len(language_sequence) - 1) * (len(language_sequence) - 2)), 2)
 
     final_results_list[2][0] = round(final_results_list[2][0] / (len(language_sequence) - 1), 2)
     final_results_list[2][1] = round(final_results_list[2][1] / (len(language_sequence) - 1), 2)
     final_results_list[2][2] = round(((final_results_list[2][0] + final_results_list[2][1]) / 2), 2)
-    final_results_list[2][3] = round(final_results_list[2][3] / ((len(language_sequence) - 1) * (len(language_sequence) - 2)), 2)
+    final_results_list[2][3] = round(
+        final_results_list[2][3] / ((len(language_sequence) - 1) * (len(language_sequence) - 2)), 2)
 
     final_results_list[3][0] = round(final_results_list[3][0] / (len(language_sequence) - 1), 2)
     final_results_list[3][1] = round(final_results_list[3][1] / (len(language_sequence) - 1), 2)
     final_results_list[3][2] = round(((final_results_list[3][0] + final_results_list[3][1]) / 2), 2)
-    final_results_list[3][3] = round(final_results_list[3][3] / ((len(language_sequence) - 1) * (len(language_sequence) - 2)), 2)
+    final_results_list[3][3] = round(
+        final_results_list[3][3] / ((len(language_sequence) - 1) * (len(language_sequence) - 2)), 2)
 
     return bleu_list, p_list, r_list, f_list, final_results_list
 
@@ -274,6 +278,7 @@ def mk_table(method_name, model_id):
     make_bar_f2f(sheet, families2families)
     os.mkdir(os.path.join(root_path, "excel", method_name))
     wb.save(os.path.join(root_path, "excel", method_name, f"{model_id}.xlsx"))
+
 
 dir_name = "vanilla"
 start_id = 1

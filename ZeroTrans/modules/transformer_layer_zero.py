@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional
+from typing import Optional
+
 import torch
 from fairseq.modules.transformer_layer import TransformerEncoderLayer
 from torch import Tensor
@@ -7,11 +8,11 @@ from torch import Tensor
 class TransformerEncoderLayerZero(TransformerEncoderLayer):
 
     def forward(
-        self,
-        x,
-        encoder_padding_mask: Optional[Tensor],
-        attn_mask: Optional[Tensor] = None,
-        ls_representation=None,
+            self,
+            x,
+            encoder_padding_mask: Optional[Tensor],
+            attn_mask: Optional[Tensor] = None,
+            ls_representation=None,
     ):
         if attn_mask is not None:
             attn_mask = attn_mask.masked_fill(

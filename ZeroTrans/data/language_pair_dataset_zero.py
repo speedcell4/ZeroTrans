@@ -9,14 +9,14 @@ logger = logging.getLogger(__name__)
 
 
 def collate(
-    samples,
-    pad_idx,
-    eos_idx,
-    left_pad_source=True,
-    left_pad_target=False,
-    input_feeding=True,
-    pad_to_length=None,
-    pad_to_multiple=1,
+        samples,
+        pad_idx,
+        eos_idx,
+        left_pad_source=True,
+        left_pad_target=False,
+        input_feeding=True,
+        pad_to_length=None,
+        pad_to_multiple=1,
 ):
     if len(samples) == 0:
         return {}
@@ -36,8 +36,8 @@ def collate(
         if alignment is None or len(alignment) == 0:
             return False
         if (
-            alignment[:, 0].max().item() >= src_len - 1
-            or alignment[:, 1].max().item() >= tgt_len - 1
+                alignment[:, 0].max().item() >= src_len - 1
+                or alignment[:, 1].max().item() >= tgt_len - 1
         ):
             logger.warning("alignment size mismatch found, skipping alignment!")
             return False
@@ -101,7 +101,7 @@ def collate(
         "id": id,
         "nsentences": len(samples),
         "ntokens": ntokens,
-        "net_input": {"src_tokens": src_tokens, "src_lengths": src_lengths,},
+        "net_input": {"src_tokens": src_tokens, "src_lengths": src_lengths, },
         "target": target,
     }
     if prev_output_tokens is not None:

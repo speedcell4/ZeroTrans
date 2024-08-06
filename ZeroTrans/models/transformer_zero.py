@@ -4,12 +4,13 @@ from fairseq.models import (
     register_model,
     register_model_architecture,
 )
-from fairseq.models.transformer.transformer_legacy import (
-    TransformerModel
-)
 from fairseq.models.transformer.transformer_config import (
     TransformerConfig,
 )
+from fairseq.models.transformer.transformer_legacy import (
+    TransformerModel
+)
+
 from ZeroTrans.models.transformer_encoder_zero import TransformerEncoderZero
 
 
@@ -24,7 +25,7 @@ class TransformerModelZero(TransformerModel):
                 param.requires_grad = False
             for param in self.decoder.embed_tokens.parameters():
                 param.requires_grad = False
-        
+
             for i in range(count):
                 layer = self.encoder.layers[i]
                 for param in layer.parameters():
@@ -34,7 +35,6 @@ class TransformerModelZero(TransformerModel):
                 param.requires_grad = False
             for param in self.encoder.layers[count].self_attn_layer_norm.parameters():
                 param.requires_grad = False
-
 
     @staticmethod
     def add_args(parser):
@@ -61,15 +61,15 @@ class TransformerModelZero(TransformerModel):
     # TorchScript doesn't support optional arguments with variable length (**kwargs).
     # Current workaround is to add union of all arguments in child classes.
     def forward(
-        self,
-        src_tokens,
-        src_lengths,
-        prev_output_tokens,
-        return_all_hiddens: bool = True,
-        features_only: bool = False,
-        alignment_layer: Optional[int] = None,
-        alignment_heads: Optional[int] = None,
-        **kwargs,
+            self,
+            src_tokens,
+            src_lengths,
+            prev_output_tokens,
+            return_all_hiddens: bool = True,
+            features_only: bool = False,
+            alignment_layer: Optional[int] = None,
+            alignment_heads: Optional[int] = None,
+            **kwargs,
     ):
         # kwargs.get return tuple, but we need tensor, so add [0]
         src_direction = kwargs.get("src_direction", None),
@@ -164,6 +164,7 @@ def base_architecture(args):
     args.quant_noise_pq = getattr(args, "quant_noise_pq", 0)
     args.quant_noise_pq_block_size = getattr(args, "quant_noise_pq_block_size", 8)
     args.quant_noise_scalar = getattr(args, "quant_noise_scalar", 0)
+
 
 @register_model_architecture("transformer_zero", "transformer_zero_opus")
 def transformer_zero_opus(args):

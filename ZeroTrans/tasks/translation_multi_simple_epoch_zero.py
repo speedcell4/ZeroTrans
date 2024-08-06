@@ -1,5 +1,6 @@
 from fairseq.tasks import register_task
 from fairseq.tasks.translation_multi_simple_epoch import TranslationMultiSimpleEpochTask
+
 from ZeroTrans.tasks import MultilingualDatasetManagerZero
 
 
